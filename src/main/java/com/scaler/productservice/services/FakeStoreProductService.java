@@ -1,9 +1,15 @@
 package com.scaler.productservice.services;
 
+import com.scaler.productservice.dtos.FakeStoreCreateProductRequestDto;
+import com.scaler.productservice.dtos.FakeStoreProductDto;
+import com.scaler.productservice.models.Category;
 import com.scaler.productservice.models.Product;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class FakeStoreProductService implements ProductService {
@@ -18,8 +24,44 @@ public class FakeStoreProductService implements ProductService {
     @Override
     public Product getProductDetails(Long id){
 
-        return null;
+        FakeStoreProductDto responseDto =
+        restTemplate.getForObject("https://fakestoreapi.com/products/" + id,
+                FakeStoreProductDto.class);
 
 
+
+
+        return responseDto.toProduct();
+
+
+    }
+
+    @Override
+    public Product createProduct(String title, String description, String image, double price, String category){
+        FakeStoreCreateProductRequestDto requestDto = new FakeStoreCreateProductRequestDto();
+        requestDto.setTitle(title);
+        requestDto.setDescription(description);
+        requestDto.setImage(image);
+        requestDto.setPrice(price);
+        requestDto.setCategory(category);
+
+        FakeStoreProductDto responseDto = restTemplate.postForObject("https://fakestoreapi.com/products",
+                requestDto,
+                FakeStoreProductDto.class);
+
+        return responseDto.toProduct();
+
+
+    }
+
+    @Override
+    public List<Product> getAllProducts(){
+        FakeStoreProductDto[] responseDto = restTemplate.getForObject("https://fakestoreapi.com/products",
+                FakeStoreProductDto[].class);
+        List<Product> products = new ArrayList<>();
+        for (FakeStoreProductDto dto: responseDto){
+            products.add(dto.toProduct());
+        }
+        return products;
     }
 }

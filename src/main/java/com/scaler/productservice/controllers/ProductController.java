@@ -1,14 +1,14 @@
 package com.scaler.productservice.controllers;
 
 
+import com.scaler.productservice.dtos.CreateProductRequestDto;
 import com.scaler.productservice.models.Product;
 import com.scaler.productservice.services.FakeStoreProductService;
 import com.scaler.productservice.services.ProductService;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 
@@ -28,14 +28,14 @@ public class ProductController {
 
     //@RequestMapping
     @GetMapping("/products")
-    public void getAllProducts(){
-
+    public List<Product> getAllProducts(){
+        return productService.getAllProducts();
     }
     @GetMapping("/products/{id}")
     public Product getProductDetails(@PathVariable("id") Long id){
 
         // the controller fetches the req java data from backend. But it cant return the java data.
-        // so it is returned as json. Spring will take care of java to json conversion
+        // so it is returned as json. Spring will take care of java to json(jackson) conversion
         // we can simply return in java
 
 
@@ -48,8 +48,16 @@ public class ProductController {
 
     }
 
+    @PostMapping("/products")
+    public Product createProduct(@RequestBody CreateProductRequestDto requestDto){
 
-    public void createProduct(){
+        return productService.createProduct(
+                requestDto.getTitle(),
+                requestDto.getDescription(),
+                requestDto.getImage(),
+                requestDto.getPrice(),
+                requestDto.getCategory()
+        );
 
     }
 
