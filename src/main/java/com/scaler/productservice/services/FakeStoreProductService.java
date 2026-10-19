@@ -4,6 +4,8 @@ import com.scaler.productservice.dtos.FakeStoreCreateProductRequestDto;
 import com.scaler.productservice.dtos.FakeStoreProductDto;
 import com.scaler.productservice.models.Category;
 import com.scaler.productservice.models.Product;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -24,14 +26,25 @@ public class FakeStoreProductService implements ProductService {
     @Override
     public Product getProductDetails(Long id){
 
-        FakeStoreProductDto responseDto =
-        restTemplate.getForObject("https://fakestoreapi.com/products/" + id,
-                FakeStoreProductDto.class);
+ //       FakeStoreProductDto responseDto =
+   //     restTemplate.getForObject("https://fakestoreapi.com/products/" + id,
+   //             FakeStoreProductDto.class);
+    //          return responseDto.getBody().toProduct();
+
+        ResponseEntity<FakeStoreProductDto> responseEntity =
+             restTemplate.getForEntity("https://fakestoreapi.com/products/" + id,
+                    FakeStoreProductDto.class);
 
 
+            if(responseEntity.getStatusCode() == HttpStatusCode.valueOf(404)){
+                //show some error to FrontEnd
+            }
 
+        else    if(responseEntity.getStatusCode() == HttpStatusCode.valueOf(500)){
+            //Tell FE that BE is having issue
+        }
 
-        return responseDto.toProduct();
+        return responseEntity.getBody().toProduct();
 
 
     }
